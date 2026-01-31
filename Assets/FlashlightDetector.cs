@@ -22,60 +22,37 @@ using UnityEngine;
             // Basic null checks
             if (flashlightLight == null)
             {
-                Debug.LogWarning("flashlightLight is NULL!");
                 return;
             }
             
             if (npc == null)
             {
-                Debug.LogWarning("npc is NULL!");
                 return;
             }
             
-            // Check if light is on
             if (!flashlightLight.enabled)
             {
-                Debug.Log("Flashlight is OFF - not detecting");
                 return;
             }
 
             Vector3 origin = flashlightLight.transform.position;
             Vector3 dir = flashlightLight.transform.forward;
 
-            Debug.Log($"Casting from {origin} in direction {dir}");
-
             // Try the SphereCast
             bool didHit = Physics.SphereCast(origin, sphereRadius, dir, out RaycastHit hit, range, hitMask, QueryTriggerInteraction.Ignore);
             
             if (didHit)
             {
-                Debug.Log($"<color=green>HIT SOMETHING!</color> Object: {hit.collider.gameObject.name}, Distance: {hit.distance:F2}");
-                
                 // Check what component it has
                 NPCWanderChase hitNPC = hit.collider.GetComponentInParent<NPCWanderChase>();
                 
                 if (hitNPC != null)
                 {
-                    Debug.Log($"<color=cyan>Found NPCWanderChase component on {hitNPC.gameObject.name}</color>");
-                    
                     if (hitNPC == npc)
                     {
-                        Debug.Log("<color=yellow>IT'S OUR NPC! Starting chase...</color>");
                         npc.StartChase();
                     }
-                    else
-                    {
-                        Debug.LogWarning("Found an NPCWanderChase but it's NOT the one we're looking for!");
-                    }
                 }
-                else
-                {
-                    Debug.Log($"<color=red>Hit {hit.collider.gameObject.name} but it has NO NPCWanderChase component</color>");
-                }
-            }
-            else
-            {
-                Debug.Log("<color=gray>SphereCast hit NOTHING</color>");
             }
         }
 
