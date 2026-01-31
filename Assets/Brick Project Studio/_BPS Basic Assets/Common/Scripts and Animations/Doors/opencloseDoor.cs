@@ -1,72 +1,59 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace SojaExiles
-
+public class DoorInteractEnter : MonoBehaviour
 {
-	public class opencloseDoor : MonoBehaviour
-	{
+    [Header("Animator")]
+    public Animator doorAnimator;
 
-		public Animator openandclose;
-		public bool open;
-		public Transform Player;
+    [Tooltip("Animation state name to play when opening")]
+    public string openStateName = "Opening";
 
-		void Start()
-		{
-			open = false;
-		}
+    [Tooltip("Animation state name to play when closing")]
+    public string closeStateName = "Closing";
 
-		void OnMouseOver()
-		{
-			{
-				if (Player)
-				{
-					float dist = Vector3.Distance(Player.position, transform.position);
-					if (dist < 15)
-					{
-						if (open == false)
-						{
-							if (Input.GetMouseButtonDown(0))
-							{
-								StartCoroutine(opening());
-							}
-						}
-						else
-						{
-							if (open == true)
-							{
-								if (Input.GetMouseButtonDown(0))
-								{
-									StartCoroutine(closing());
-								}
-							}
+    [Header("Interaction")]
+    public KeyCode interactKey = KeyCode.Return; // Enter
+    public float interactDistance = 2.0f;
 
-						}
+    [Header("Player")]
+    public Transform player;
 
-					}
-				}
+    private bool _isOpen;
 
-			}
+    private void Start()
+    {
+        // Auto-find Player by tag if not assigned
+        if (player == null)
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) player = p.transform;
+        }
 
-		}
+        if (doorAnimator == null)
+        {
+            doorAnimator = GetComponent<Animator>();
+        }
+    }
 
-		IEnumerator opening()
-		{
-			print("you are opening the door");
-			openandclose.Play("Opening");
-			open = true;
-			yield return new WaitForSeconds(.5f);
-		}
+    private void Update()
+    {
+        if (player == null || doorAnimator == null) return;
 
-		IEnumerator closing()
-		{
-			print("you are closing the door");
-			openandclose.Play("Closing");
-			open = false;
-			yield return new WaitForSeconds(.5f);
-		}
+        float dist = Vector3.Distance(player.position, transform.position);
 
+        if (dist <= interactDistance && Input.GetKeyDown(interactKey))
+        {
+            ToggleDoor();
+        }
+    }
 
-	}
+    private void ToggleDoor()
+    {
+        _isOpen = !_isOpen;
+
+        if (_isOpen)
+            doorAnimator.Play(openStateName, 0, 0f);
+        else
+            doorAnimator.Play(closeStateName, 0, 0f);
+    }
 }
