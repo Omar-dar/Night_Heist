@@ -1,5 +1,4 @@
 using UnityEngine;
-
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -9,91 +8,90 @@ public class FlashlightController : MonoBehaviour
     [Header("References")]
     [Tooltip("Drag the Spot Light component here (your Flashlight object)")]
     public Light flashlight;
-
+    
+    [Header("Mouse Aim")]
+    public Camera aimCamera;
+    
     [Header("Toggle")]
     public Key toggleKey = Key.F;
-
-    [Header("Rotation Keys")]
-    public Key rotateLeftKey = Key.Q;
-    public Key rotateRightKey = Key.E;
-
-    [Tooltip("Optional: tilt up/down")]
-    public Key tiltUpKey = Key.R;
-    public Key tiltDownKey = Key.T;
-
-    [Header("Rotation Settings")]
-    [Tooltip("Degrees per second")]
-    public float rotateSpeed = 90f;
-
-    [Tooltip("Clamp left/right (yaw)")]
-    public float yawLimit = 70f;
-
-    [Tooltip("Clamp up/down (pitch). Negative looks down, positive looks up.")]
-    public float pitchUpLimit = 35f;
-    public float pitchDownLimit = 35f;
-
+    
+    [Header("Cone Constraints")]
+    [Tooltip("Maximum angle the light can deviate from camera forward (in degrees)")]
+    public float maxConeAngle = 45f;
+    
+    [Tooltip("Smooth rotation speed")]
+    public float rotationSmoothSpeed = 10f;
+    
     private bool _isOn = true;
-
-    private float _yaw;   // left/right
-    private float _pitch; // up/down
+    private Quaternion _targetRotation;
 
     void Start()
     {
+        if (aimCamera == null)
+        {
+            aimCamera = Camera.main;
+        }
+        
         if (flashlight == null)
         {
             flashlight = GetComponentInChildren<Light>();
         }
-
-        // Start from current local rotation
-        Vector3 e = transform.localEulerAngles;
-        _pitch = NormalizeAngle(e.x);
-        _yaw = NormalizeAngle(e.y);
-
+        
         if (flashlight != null)
             _isOn = flashlight.enabled;
+            
+        _targetRotation = transform.rotation;
     }
 
     void Update()
     {
 #if ENABLE_INPUT_SYSTEM
-        if (Keyboard.current == null) return;
+        if (Mouse.current == null || aimCamera == null) return;
 
-        // ---- Toggle ON/OFF ----
-        if (Keyboard.current[toggleKey].wasPressedThisFrame && flashlight != null)
+        // Toggle flashlight
+        if (Keyboard.current != null && Keyboard.current[toggleKey].wasPressedThisFrame && flashlight != null)
         {
             _isOn = !_isOn;
             flashlight.enabled = _isOn;
         }
 
-        // ---- Rotate ----
-        float yawInput = 0f;
-        if (Keyboard.current[rotateLeftKey].isPressed) yawInput -= 1f;
-        if (Keyboard.current[rotateRightKey].isPressed) yawInput += 1f;
-
-        float pitchInput = 0f;
-        if (Keyboard.current[tiltUpKey].isPressed) pitchInput -= 1f;    // look up (negative pitch in Unity)
-        if (Keyboard.current[tiltDownKey].isPressed) pitchInput += 1f;  // look down
-
-        _yaw += yawInput * rotateSpeed * Time.deltaTime;
-        _pitch += pitchInput * rotateSpeed * Time.deltaTime;
-
-        // clamp
-        _yaw = Mathf.Clamp(_yaw, -yawLimit, yawLimit);
-        _pitch = Mathf.Clamp(_pitch, -pitchUpLimit, pitchDownLimit);
-
-        // apply
-        transform.localRotation = Quaternion.Euler(_pitch, _yaw, 0f);
-
-#else
-        // If you are NOT using the new Input System, you can add legacy input here.
+        // Get mouse position and create ray
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        Ray ray = aimCamera.ScreenPointToRay(mousePosition);
+        
+        // Calculate desired direction (where mouse is pointing)
+        Vector3 desiredDirection = ray.direction;
+        
+        // Get camera forward direction (center of cone)
+        Vector3 cameraForward = aimCamera.transform.forward;
+        
+        // Calculate angle between desired direction and camera forward
+        float angleFromCenter = Vector3.Angle(cameraForward, desiredDirection);
+        
+        // Constrain within cone
+        Vector3 constrainedDirection;
+        if (angleFromCenter > maxConeAngle)
+        {
+            // Clamp to cone edge
+            // Project onto cone surface
+            Vector3 axis = Vector3.Cross(cameraForward, desiredDirection);
+            constrainedDirection = Quaternion.AngleAxis(maxConeAngle, axis) * cameraForward;
+        }
+        else
+        {
+            // Within cone, use desired direction
+            constrainedDirection = desiredDirection;
+        }
+        
+        // Calculate target rotation
+        _targetRotation = Quaternion.LookRotation(constrainedDirection);
+        
+        // Smoothly rotate towards target
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation, 
+            _targetRotation, 
+            rotationSmoothSpeed * Time.deltaTime
+        );
 #endif
-    }
-
-    private float NormalizeAngle(float angle)
-    {
-        // Converts 0..360 into -180..180
-        while (angle > 180f) angle -= 360f;
-        while (angle < -180f) angle += 360f;
-        return angle;
     }
 }
