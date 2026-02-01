@@ -11,20 +11,21 @@ public class SecurityCamera : MonoBehaviour
 
     void Update()
     {
+        if (alarmTriggered) return;
+
         if (CanSeePlayer())
         {
-            if (!alarmTriggered)
-            {
-                alarmTriggered = true;
+            alarmTriggered = true;
+
+            if (alarm != null)
                 alarm.Play();
-            }
-        }
-        else
-        {
-            alarmTriggered = false;
-            alarm.Stop();
+
+            Debug.Log("Player detected by camera!");
+            if (GameManager.Instance != null)
+                GameManager.Instance.GameOver();
         }
     }
+
 
     bool CanSeePlayer()
     {
@@ -33,20 +34,18 @@ public class SecurityCamera : MonoBehaviour
 
         if (distance > viewDistance)
             return false;
-        Debug.Log($"Distance check passed: Distance to player: {distance}");
 
         float angle = Vector3.Angle(transform.forward, directionToPlayer);
         if (angle > viewAngle / 2)
             return false;
-        Debug.Log($"Angle check passed: Angle to player: {angle}");
 
         if (Physics.Raycast(transform.position, directionToPlayer, out RaycastHit hit, viewDistance))
         {
-            Debug.Log($"Raycast hit: {hit.transform.name}");
-
+            Debug.Log("Raycast hit object: " + hit.transform.name);
             if (hit.transform.CompareTag("Player"))
-                Debug.Log($"Raycast hit the player!: {hit.transform.name}");
+            {
                 return true;
+            }
         }
 
         return false;

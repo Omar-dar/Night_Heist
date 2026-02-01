@@ -197,6 +197,11 @@ public class NPCWanderChase : MonoBehaviour
     {
         State = NPCState.Chase;
         _chaseTimer = ChaseDuration;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.GameOver();
+        }
     }
 
     // -----------------------------

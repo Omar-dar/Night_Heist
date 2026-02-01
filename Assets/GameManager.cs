@@ -15,6 +15,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject victoryPopup;   // VictoryPopup image object
     [SerializeField] private GameObject gameOverPopup;  // GameOverPopup image object
 
+    [Header("Popup Delays")]
+    [SerializeField] private float gameOverPopupDelay = 1.5f;
+    [SerializeField] private float victoryPopupDelay = 1.5f;
+
     [Header("Return To Main Menu")]
     [SerializeField] private int mainMenuBuildIndex = 0;   // MainMenu scene index in Build Profiles
     [SerializeField] private float returnDelay = 3f;       // seconds before going back
@@ -57,22 +61,6 @@ public class GameManager : MonoBehaviour
             counterText.text = $"{collectedCount}/{totalItemsToWin}";
     }
 
-    private void Victory()
-    {
-        if (ended) return;
-        ended = true;
-
-        Time.timeScale = 0f;
-
-        if (victoryPopup != null)
-            victoryPopup.SetActive(true); // PopupScale animates
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
-        StartCoroutine(ReturnToMenuAfterDelay());
-    }
-
     public void GameOver()
     {
         if (ended) return;
@@ -80,14 +68,47 @@ public class GameManager : MonoBehaviour
 
         Time.timeScale = 0f;
 
+        StartCoroutine(GameOverSequence());
+    }
+
+    private void Victory()
+    {
+        if (ended) return;
+        ended = true;
+
+        Time.timeScale = 0f;
+
+        StartCoroutine(VictorySequence());
+    }
+
+    private IEnumerator GameOverSequence()
+    {
+        yield return new WaitForSecondsRealtime(gameOverPopupDelay);
+        Time.timeScale = 0f;
+
+
         if (gameOverPopup != null)
-            gameOverPopup.SetActive(true); // PopupScale animates
+            gameOverPopup.SetActive(true);
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         StartCoroutine(ReturnToMenuAfterDelay());
     }
+
+    private IEnumerator VictorySequence()
+    {
+        yield return new WaitForSecondsRealtime(victoryPopupDelay);
+
+        if (victoryPopup != null)
+            victoryPopup.SetActive(true);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        StartCoroutine(ReturnToMenuAfterDelay());
+    }
+
 
     private IEnumerator ReturnToMenuAfterDelay()
     {
