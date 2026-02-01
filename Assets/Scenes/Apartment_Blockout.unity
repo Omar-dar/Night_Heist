@@ -7079,19 +7079,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3815547084708954170, guid: eed54a613be71b543a99e53a8e2914de, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9659258
+      value: 0.89239913
       objectReference: {fileID: 0}
     - target: {fileID: 3815547084708954170, guid: eed54a613be71b543a99e53a8e2914de, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.2588191
+      value: 0.23911765
       objectReference: {fileID: 0}
     - target: {fileID: 3815547084708954170, guid: eed54a613be71b543a99e53a8e2914de, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.3696438
       objectReference: {fileID: 0}
     - target: {fileID: 3815547084708954170, guid: eed54a613be71b543a99e53a8e2914de, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.09904577
       objectReference: {fileID: 0}
     - target: {fileID: 3815547084708954170, guid: eed54a613be71b543a99e53a8e2914de, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -7099,7 +7099,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3815547084708954170, guid: eed54a613be71b543a99e53a8e2914de, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -45
       objectReference: {fileID: 0}
     - target: {fileID: 3815547084708954170, guid: eed54a613be71b543a99e53a8e2914de, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -11848,7 +11848,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 12
   m_Type: 0
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.8207547, g: 0.24390352, b: 0.24390352, a: 1}
   m_Intensity: 15
   m_Range: 10
   m_SpotAngle: 30
@@ -11915,6 +11915,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f5a6d4983276bdde81caba25f03e52c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraScanner
+  maxAngle: 45
+  scanSpeed: 2
 --- !u!1 &1844085562
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,7 +3,7 @@ using UnityEngine;
 public class CameraScanner : MonoBehaviour
 {
     public float maxAngle = 45f;
-    public float scanSpeed = 2f;
+    public float scanSpeed = 0.1f;
 
     private float startY;
 
@@ -14,6 +14,7 @@ public class CameraScanner : MonoBehaviour
 
     void Update()
     {
-        transform.Rotate(0f, 60f * Time.deltaTime, 0f);
+        float angle = Mathf.Sin(Time.time * scanSpeed) * maxAngle;
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, startY + angle, transform.eulerAngles.z);
     }
 }
