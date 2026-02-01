@@ -1,7 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
-public class DoorAutoTrigger : MonoBehaviour
+public class DoorTriggerAuto : MonoBehaviour
 {
     [Header("Door")]
     public Animator doorAnimator;
@@ -10,7 +10,7 @@ public class DoorAutoTrigger : MonoBehaviour
 
     [Header("Close Settings")]
     public bool closeWhenPlayerLeaves = true;
-    public float closeDelayAfterEnter = 0f; // set to 1-2 sec if you want auto close after entering
+    public float closeDelayAfterEnter = 0f;
 
     [Header("Audio")]
     public AudioSource audioSource;
@@ -25,7 +25,6 @@ public class DoorAutoTrigger : MonoBehaviour
 
     private void Awake()
     {
-        // Auto-find components if not assigned
         if (doorAnimator == null)
             doorAnimator = GetComponentInParent<Animator>();
 
@@ -37,18 +36,15 @@ public class DoorAutoTrigger : MonoBehaviour
     {
         if (!other.CompareTag(playerTag)) return;
 
-        // Cancel any pending close
         if (closeRoutine != null)
         {
             StopCoroutine(closeRoutine);
             closeRoutine = null;
         }
 
-        // Open door
         if (!isOpen)
             OpenDoor();
 
-        // Optional: close after a delay once player enters
         if (closeDelayAfterEnter > 0f)
             closeRoutine = StartCoroutine(CloseAfterDelay(closeDelayAfterEnter));
     }
@@ -59,7 +55,6 @@ public class DoorAutoTrigger : MonoBehaviour
 
         if (closeWhenPlayerLeaves)
         {
-            // Close when player leaves trigger area
             if (closeRoutine != null)
             {
                 StopCoroutine(closeRoutine);
