@@ -16,3 +16,5 @@ Navigate the apartment using environmental cover:
 
 Objective:
 - Successfully steal all required items and escape the apartment undetected.
+
+<img width="3407" height="1405" alt="Screenshot 2026-02-01 220551" src="https://github.com/user-attachments/assets/fe1d8c1c-0cd2-431d-8225-a825415060e0" />
