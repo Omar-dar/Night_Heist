@@ -5,6 +5,8 @@ public class NPCWanderChase : MonoBehaviour
 {
     public enum NPCState { Wander, Chase }
 
+    public AudioSource scream;
+
     [Header("State")]
     public NPCState State = NPCState.Wander;
 
@@ -197,6 +199,9 @@ public class NPCWanderChase : MonoBehaviour
     {
         State = NPCState.Chase;
         _chaseTimer = ChaseDuration;
+
+        if (scream != null)
+            scream.Play();
 
         if (GameManager.Instance != null)
         {

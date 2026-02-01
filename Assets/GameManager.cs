@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
         if (ended) return;
         ended = true;
 
-        Time.timeScale = 0f;
+        // Time.timeScale = 0f;
 
         StartCoroutine(GameOverSequence());
     }
