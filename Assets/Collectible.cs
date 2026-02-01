@@ -40,6 +40,10 @@ public class Collectible : MonoBehaviour
 
     public void Collect()
     {
+        // ✅ ADD THIS LINE (increase count)
+        if (GameManager.Instance != null)
+            GameManager.Instance.CollectOne();
+
         Destroy(gameObject);
     }
 }
